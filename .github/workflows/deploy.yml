@@ -20,18 +20,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0 # Shallow clones must be disabled for SonarCloud analysis
 
-      # --- ADDED SONARCLOUD SCAN STEP ---
+      # --- UPDATED SONARCLOUD SCAN STEP ---
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@v5.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.organization=your-sonarcloud-org
-            -Dsonar.projectKey=yourusername_smart-event-user-service
+            -Dsonar.organization=koshigawarman
+            -Dsonar.projectKey=koshigawarman_y4s1-event-management-system-user-service
+      # ----------------------------------
       # ----------------------------------
       - name: Configure AWS Credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
