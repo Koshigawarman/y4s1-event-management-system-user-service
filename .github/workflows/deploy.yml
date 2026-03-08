@@ -7,7 +7,7 @@ on:
   pull_request:
     branches:
       - main
-    types: [opened, synchronize, reopened, closed] # also trigger on merge
+    types: [opened, synchronize, reopened, closed]
 
 jobs:
   build-and-push:
@@ -19,12 +19,25 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
 
+      # --- ADDED SONARCLOUD SCAN STEP ---
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.organization=your-sonarcloud-org
+            -Dsonar.projectKey=yourusername_smart-event-user-service
+      # ----------------------------------
       - name: Configure AWS Credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ap-south-1 # ← CHANGE TO YOUR REGION e.g. ap-southeast-1 or us-east-1
+          aws-region: ap-south-1
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -51,8 +64,6 @@ jobs:
             ${{ steps.login-ecr.outputs.registry }}/smart-event-user-service:${{ github.sha }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
-          # For faster future builds (optional multi-platform later)
-          # platforms: linux/amd64,linux/arm64
 
       - name: Update cache after build
         run: |

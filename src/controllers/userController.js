@@ -1,9 +1,10 @@
-const User = require('../models/User');
-const jwt = require('jsonwebtoken');
+const User = require("../models/User");
+const jwt = require("jsonwebtoken");
 
 const generateToken = (id, role) => {
   return jwt.sign({ id, role }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN || '1h'
+    expiresIn: process.env.JWT_EXPIRES_IN || "1d",
+    algorithm: "HS256", // Explicitly set (default anyway)
   });
 };
 
@@ -13,14 +14,14 @@ const registerUser = async (req, res) => {
   try {
     const userExists = await User.findOne({ email });
     if (userExists) {
-      return res.status(409).json({ error: 'User already exists' });
+      return res.status(409).json({ error: "User already exists" });
     }
 
     const user = await User.create({
       name,
       email,
       password,
-      phone
+      phone,
     });
 
     const token = generateToken(user._id, user.role);
@@ -31,9 +32,9 @@ const registerUser = async (req, res) => {
         name: user.name,
         email: user.email,
         phone: user.phone,
-        role: user.role
+        role: user.role,
       },
-      token
+      token,
     });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -44,7 +45,7 @@ const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email }).select("+password");
 
     if (user && (await user.comparePassword(password))) {
       const token = generateToken(user._id, user.role);
@@ -55,12 +56,12 @@ const loginUser = async (req, res) => {
           name: user.name,
           email: user.email,
           phone: user.phone,
-          role: user.role
+          role: user.role,
         },
-        token
+        token,
       });
     } else {
-      res.status(401).json({ error: 'Invalid email or password' });
+      res.status(401).json({ error: "Invalid email or password" });
     }
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -69,9 +70,9 @@ const loginUser = async (req, res) => {
 
 const getUserProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select('-password');
+    const user = await User.findById(req.user.id).select("-password");
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
     res.json(user);
   } catch (error) {
@@ -83,7 +84,7 @@ const updateUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     user.name = req.body.name || user.name;
@@ -96,7 +97,7 @@ const updateUserProfile = async (req, res) => {
       name: updatedUser.name,
       email: updatedUser.email,
       phone: updatedUser.phone,
-      role: updatedUser.role
+      role: updatedUser.role,
     });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -107,5 +108,5 @@ module.exports = {
   registerUser,
   loginUser,
   getUserProfile,
-  updateUserProfile
+  updateUserProfile,
 };
