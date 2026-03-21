@@ -31,6 +31,14 @@ app.use(limiter); // Apply globally (or per-route if preferred)
 // Routes
 app.use("/api", require("./routes/userRoutes"));
 
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "UP",
+    message: "API is healthy",
+    timestamp: new Date(),
+  });
+});
+
 // MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI)
