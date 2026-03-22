@@ -31,6 +31,7 @@ app.use(limiter); // Apply globally (or per-route if preferred)
 // Routes
 app.use("/api", require("./routes/userRoutes"));
 
+// Health check endpoint
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "UP",
