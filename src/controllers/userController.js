@@ -24,7 +24,7 @@ const registerUser = async (req, res) => {
       phone,
     });
 
-    const token = generateToken(user._id, user.email, user.role);
+    const token = generateToken(user._id, user.role, user.email);
 
     res.status(201).json({
       user: {
