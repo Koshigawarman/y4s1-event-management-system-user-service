@@ -1,8 +1,8 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 
-const generateToken = (id, role, email) => {
-  return jwt.sign({ id, role, email }, process.env.JWT_SECRET, {
+const generateToken = (id, email, role) => {
+  return jwt.sign({ id, email, role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN || "1d",
     algorithm: "HS256", // Explicitly set (default anyway)
   });
