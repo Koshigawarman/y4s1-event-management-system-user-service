@@ -3,6 +3,7 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const helmet = require("helmet");
+const swaggerRoutes = require("./routes/swaggerRoutes");
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ app.use(limiter); // Apply globally (or per-route if preferred)
 
 // Routes
 app.use("/api", require("./routes/userRoutes"));
+app.use("/api-docs", swaggerRoutes);
 
 // Health check endpoint
 app.get("/health", (req, res) => {
