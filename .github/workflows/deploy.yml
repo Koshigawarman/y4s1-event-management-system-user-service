@@ -58,7 +58,7 @@ jobs:
         run: |
           aws ecs update-service \
             --cluster smart-event-cluster \
-            --service smart-event-registration-task-service-4b4yv8rr \
+            --service user-service-task-service-0fdh0925 \
             --force-new-deployment
 
       - name: Update cache after build
