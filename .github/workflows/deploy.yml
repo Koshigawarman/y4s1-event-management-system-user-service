@@ -54,6 +54,13 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
 
+      - name: Force ECS deployment
+        run: |
+          aws ecs update-service \
+            --cluster smart-event-cluster \
+            --service smart-event-registration-task-service-4b4yv8rr \
+            --force-new-deployment
+
       - name: Update cache after build
         run: |
           rm -rf /tmp/.buildx-cache
